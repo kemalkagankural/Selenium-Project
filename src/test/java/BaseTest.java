@@ -3,7 +3,13 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import testlogger.TestResultLogger;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -12,13 +18,23 @@ public class BaseTest {
 
     WebDriver driver ;
 
+    static final String APP_URL = "https://www.amazon.com.tr/";
+    static final String HOST_URL = "http://localhost:4444/wd/hub";
     @BeforeAll
     public void setUp(){
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.get("https://www.amazon.com.tr/");
-        driver.manage().window().maximize();
+        ChromeOptions opt = new ChromeOptions();
+        //FirefoxOptions opt=new FirefoxOptions();
+
+        try {
+            driver = new RemoteWebDriver(new URL(HOST_URL),opt);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.get(APP_URL);
     }
+
 
     @AfterAll
     public void tearDown(){
